@@ -2,8 +2,8 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/id-2221-final-project.iml" filepath="$PROJECT_DIR$/.idea/modules/id-2221-final-project.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/id-2221-final-project-build.iml" filepath="$PROJECT_DIR$/.idea/modules/id-2221-final-project-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/github-graphframe-builder.iml" filepath="$PROJECT_DIR$/.idea/modules/github-graphframe-builder.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/github-graphframe-builder-build.iml" filepath="$PROJECT_DIR$/.idea/modules/github-graphframe-builder-build.iml" />
     </modules>
   </component>
 </project>
