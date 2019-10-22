@@ -13,7 +13,7 @@ object GraphBuilder {
       .getOrCreate()
 
     // Load our input data
-    val data = spark.read.json("gs://data.gharchive.org/2015-01-02-*.json.gz")
+    val data = spark.read.json("gs://data.gharchive.org/%s.json.gz".format(args(0)))
 
     // Define the columsn we are going to use.
     val actors = data.col("actor.login")
@@ -32,8 +32,8 @@ object GraphBuilder {
     val graph = GraphFrame(v, e)
 
     // Store the graph
-    graph.vertices.write.parquet("gs://gh-graphframes/2015-01-02/vertices")
-    graph.edges.write.parquet("gs://gh-graphframes/2015-01-02/edges")
+    graph.vertices.write.parquet("%s/vertices".format(args(1)))
+    graph.edges.write.parquet("%s/edges".format(args(1)))
 
     spark.stop()
   }

@@ -39,18 +39,20 @@ sbt assembly
 
 [Create a DataProc cluster](https://cloud.google.com/dataproc/docs/guides/create-cluster) if you don't have one running yet.
 
-Launch the project on a DataProc cluster, make sure to update the name of the cluster:
+Launch the project on a DataProc cluster, make sure to update the name of the cluster, the clusters region (if not set to global), the input selector and output location:
 ```bash
-gcloud dataproc jobs submit spark --jar target/scala-2.11/github-graphframe-builder-assembly-0.1.jar --cluster spark-gh-archive-dataproc
+gcloud dataproc jobs submit spark --jar target/scala-2.11/github-graphframe-builder-assembly-0.1.jar --cluster gh-archive-dataproc -- "2015-01-01-*" "gs://gh-grahpframes/2015-01-01"
 ```
 
 ### Cleanup
-Delete your cluster:
+To prevent unnecessary costs, make sure to destroy all resources which you aren't using anymore.
+
+First, the most expensive thing to keep running is probably going to be the DataProc cluster. Destroy it by running:
 ```bash
-cloud dataproc clusters delete spark-gh-archive-dataproc
+gcloud dataproc clusters delete gh-archive-dataproc
 ``` 
 
-To avoid further cost, make sure to also remove files stored in Cloud Storage:
+Also, along the way we have stored some files into Cloud Storage, e.g. the JAR we assembled or parquet files as job artifacts (see the second runtime argument):
 ```bash
 # Individual files
 gsutil rm gs://<bucket-name>/myfilename.txt
