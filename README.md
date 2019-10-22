@@ -39,7 +39,9 @@ sbt assembly
 
 [Create a DataProc cluster](https://cloud.google.com/dataproc/docs/guides/create-cluster) if you don't have one running yet.
 
-Launch the project on a DataProc cluster, make sure to update the name of the cluster, the clusters region (if not set to global), the input selector and output location:
+Launch the project on a DataProc cluster, make sure to update the name of the cluster, the clusters region (if not set to global), the input selector and output location.
+ 
+**The input selector should not match files created before 1th of January 2015, so for example `201*-01-01-10` is illegal.**
 ```bash
 gcloud dataproc jobs submit spark --jar target/scala-2.11/github-graphframe-builder-assembly-0.1.jar --cluster gh-archive-dataproc -- "2015-01-01-*" "gs://gh-grahpframes/2015-01-01"
 ```
