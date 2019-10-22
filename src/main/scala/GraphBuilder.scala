@@ -15,6 +15,9 @@ object GraphBuilder {
     // Load our input data
     val data = spark.read.json("gs://data.gharchive.org/%s.json.gz".format(args(0)))
 
+    // Print the schema
+    data.printSchema()
+
     // Define the columsn we are going to use.
     val actors = data.col("actor.login")
     val repositories = data.col("repo.name")
