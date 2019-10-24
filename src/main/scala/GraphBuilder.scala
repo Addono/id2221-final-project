@@ -18,7 +18,7 @@ object GraphBuilder {
     // Print the schema
     data.printSchema()
 
-    // Define the columsn we are going to use.
+    // Define the columns we are going to use.
     val actors = data.col("actor.login")
     val repositories = data.col("repo.name")
     val actions = data.col("type")
