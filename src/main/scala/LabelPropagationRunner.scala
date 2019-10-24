@@ -17,10 +17,17 @@ object LabelPropagationRunner {
 
     // Run label propagation algorithm
     val iterations = if (args.length >= 2) args(1).toInt else 5
-    val result = graph.labelPropagation.maxIter(iterations).run()
+    val result = graph.labelPropagation.maxIter(iterations).run().persist()
+
+    v.unpersist()
+    e.unpersist()
 
     // Process output
-    result.select("id", "label").show()
+    result.printSchema()
+    val output = result.select("id", "label").persist()
+
+    output.show()
+    output.write.parquet("%s/%s_%s".format(args(0), java.time.LocalDateTime.now, iterations.toString))
 
     spark.stop()
   }
