@@ -1,6 +1,11 @@
 import org.apache.spark.sql.SparkSession
 import org.graphframes.GraphFrame
 
+/**
+ * Retrives event data from the Github Archive and builds a GraphFrames graph from this.
+ * The vertices are usernames and repository names, edges are events originating from
+ * users towards the repository they act on.
+ */
 object GraphBuilder {
   def main(args: Array[String]) {
 
@@ -9,7 +14,6 @@ object GraphBuilder {
       .appName("Github GraphFrame Builder")
         // Master not selected, as this is set by the Google Cloud Spark environment.
 //      .master("spark://localhost:7077")
-//      .master("local[*]")
       .getOrCreate()
 
     // Load our input data
@@ -28,8 +32,8 @@ object GraphBuilder {
       actors.alias("src"),
       repositories.alias("dst"),
       actions.alias("action")
-    )
-    val v = data.select(actors.alias("id")).union(data.select(repositories.alias("id")))
+    ).distinct()
+    val v = data.select(actors.alias("id")).union(data.select(repositories.alias("id"))).distinct()
 
     // Construct the graph
     val graph = GraphFrame(v, e)
