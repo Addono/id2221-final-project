@@ -43,7 +43,11 @@ Launch the project on a DataProc cluster, make sure to update the name of the cl
  
 **The input selector should not match files created before 1th of January 2015, so for example `201*-01-01-10` is illegal.**
 ```bash
-gcloud dataproc jobs submit spark --jar target/scala-2.11/github-graphframe-builder-assembly-0.1.jar --cluster gh-archive-dataproc -- "2015-01-01-*" "gs://gh-grahpframes/2015-01-01"
+gcloud dataproc jobs submit spark --jars target/scala-2.11/github-graphframe-builder-assembly-0.2.jar --cluster gh-archive-dataproc --region europe-west1 --class GraphBuilder -- "2015-01-01-*" gs://gh-grahpframes/2015-01-01
+```
+
+```bash
+gcloud dataproc jobs submit spark --jars target/scala-2.11/github-graphframe-builder-assembly-0.2.jar --cluster gh-archive-dataproc --region europe-west1  --class LabelPropegationRunner -- gs://gh-graphframes/2015-01-01 5
 ```
 
 ### Cleanup
