@@ -47,7 +47,7 @@ gcloud dataproc jobs submit spark --jars target/scala-2.11/github-graphframe-bui
 ```
 
 ```bash
-gcloud dataproc jobs submit spark --jars target/scala-2.11/github-graphframe-builder-assembly-0.2.jar --cluster gh-archive-dataproc --region europe-west1  --class LabelPropegationRunner -- gs://gh-graphframes/2015-01-01 5
+gcloud dataproc jobs submit spark --jars target/scala-2.11/github-graphframe-builder-assembly-0.2.jar --cluster gh-archive-dataproc --region europe-west1  --class LabelPropagationRunner -- gs://gh-graphframes/2015-01-01 5
 ```
 
 ### Cleanup

@@ -1,7 +1,7 @@
 import org.apache.spark.sql.SparkSession
 import org.graphframes.GraphFrame
 
-object LabelPropegationRunner {
+object LabelPropagationRunner {
   def main(args: Array[String]) {
     // Define our Spark session
     val spark = SparkSession.builder
