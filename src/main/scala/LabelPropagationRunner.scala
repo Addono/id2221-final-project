@@ -6,11 +6,17 @@ object LabelPropagationRunner {
     // Define our Spark session
     val spark = SparkSession.builder
       .appName("Github GraphFrame Builder")
+      .config("spark.sql.autoBroadcastJoinThreshold", 10485760*1000) // 10MB * 1000 = 10GB
+      .config("spark.sql.broadcastTimeout", -1) // Indefinite
       .getOrCreate()
 
     // Load our input data
-    val v = spark.read.parquet("%s/vertices".format(args(0))).distinct().persist()
-    val e = spark.read.parquet("%s/edges".format(args(0))).distinct().persist()
+    val v = spark.read.parquet("%s/vertices".format(args(0)))
+      .distinct()
+      .persist()
+    val e = spark.read.parquet("%s/edges".format(args(0)))
+      .distinct()
+      .persist()
 
     // Construct the graph
     val graph = GraphFrame(v, e)
