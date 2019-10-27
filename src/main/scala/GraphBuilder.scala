@@ -8,7 +8,6 @@ import org.graphframes.GraphFrame
  */
 object GraphBuilder {
   def main(args: Array[String]) {
-
     // Define our Spark session
     val spark = SparkSession.builder
       .appName("Github GraphFrame Builder")
@@ -16,8 +15,16 @@ object GraphBuilder {
 //      .master("spark://localhost:7077")
       .getOrCreate()
 
+    val graph: GraphFrame = constructGraph(args(0), spark)
+
+    storeGraph(args(1), graph)
+
+    spark.stop()
+  }
+
+  def constructGraph(inputMatch: String, spark: SparkSession): GraphFrame = {
     // Load our input data
-    val data = spark.read.json("gs://data.gharchive.org/%s.json.gz".format(args(0)))
+    val data = spark.read.json("gs://data.gharchive.org/%s.json.gz".format(inputMatch))
 
     // Print the schema
     data.printSchema()
@@ -28,20 +35,16 @@ object GraphBuilder {
     val actions = data.col("type")
 
     // Define the edges and vertices as DFs
-    val e = data.select(
-      actors.alias("src"),
-      repositories.alias("dst"),
-      actions.alias("action")
-    ).distinct()
+    val e = data.select(actors.alias("src"), repositories.alias("dst"), actions.alias("action")).distinct()
     val v = data.select(actors.alias("id")).union(data.select(repositories.alias("id"))).distinct()
 
     // Construct the graph
-    val graph = GraphFrame(v, e)
-
-    // Store the graph
-    graph.vertices.write.parquet("%s/vertices".format(args(1)))
-    graph.edges.write.parquet("%s/edges".format(args(1)))
-
-    spark.stop()
+    GraphFrame(v, e)
   }
+
+  def storeGraph(directory: String, graph: GraphFrame): Unit = {
+    graph.vertices.repartition(1).write.csv("%s/vertices".format(directory))
+    graph.edges.repartition(1).write.csv("%s/edges".format(directory))
+  }
+
 }

@@ -26,28 +26,27 @@ $ gsutil du -sh gs://data.gharchive.org
 
 
 ### Installing
-Clone the repository.
-
-Use SBT to download the 
-
-## Usage <a name = "usage"></a>
-
-First, we are going to build the application, make sure to use [sbt-assembly](https://github.com/sbt/sbt-assembly) to ensure that the dependencies are added to the JAR:
+Clone the repository and build the application:
 ```bash
 sbt assembly
 ```
+
+## Usage <a name = "usage"></a>
 
 [Create a DataProc cluster](https://cloud.google.com/dataproc/docs/guides/create-cluster) if you don't have one running yet.
 
 Launch the project on a DataProc cluster, make sure to update the name of the cluster, the clusters region (if not set to global), the input selector and output location.
  
-**The input selector should not match files created before 1th of January 2015, so for example `201*-01-01-10` is illegal.**
+**Note: The input selector should not match files created before 1th of January 2015, so for example `201*-01-01-10` is illegal.**
+
+The `GraphBuilder` can be used to construct the graphs without running any community detection algorithms.
 ```bash
 gcloud dataproc jobs submit spark --jars target/scala-2.11/github-graphframe-builder-assembly-0.2.jar --cluster gh-archive-dataproc --region europe-west1 --class GraphBuilder -- "2015-01-01-*" gs://gh-grahpframes/2015-01-01
 ```
 
+The `LabelPropagationRunner` both constructs the graph and then runs the label propagation algorithm on this graph. It's first argument is the location where the output files can be written to, all preceding arguments are input selector. Each of which will be scheduled as seperate batches.
 ```bash
-gcloud dataproc jobs submit spark --jars target/scala-2.11/github-graphframe-builder-assembly-0.2.jar --cluster gh-archive-dataproc --region europe-west1  --class LabelPropagationRunner -- gs://gh-graphframes/2015-01-01 5
+gcloud dataproc jobs submit spark --jars target/scala-2.11/github-graphframe-builder-assembly-0.2.jar --cluster gh-archive-dataproc --region europe-west1  --class `LabelPropagationRunner` -- gs://gh-graphframes "2015-01-01-*"
 ```
 
 ### Cleanup

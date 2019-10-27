@@ -1,40 +1,35 @@
-import org.apache.spark.sql.SparkSession
-import org.graphframes.GraphFrame
+import org.apache.spark.sql.{SaveMode, SparkSession}
 
 object LabelPropagationRunner {
   def main(args: Array[String]) {
-    // Define our Spark session
-    val spark = SparkSession.builder
-      .appName("Github GraphFrame Builder")
-      .config("spark.sql.autoBroadcastJoinThreshold", 10485760*1000) // 10MB * 1000 = 10GB
-      .config("spark.sql.broadcastTimeout", -1) // Indefinite
-      .getOrCreate()
+    val outputBucketName = args(0) + "/csv"
+    val batches = args.slice(1, args.length)
 
-    // Load our input data
-    val v = spark.read.parquet("%s/vertices".format(args(0)))
-      .distinct()
-      .persist()
-    val e = spark.read.parquet("%s/edges".format(args(0)))
-      .distinct()
-      .persist()
+    batches.foreach { batch => {
+      // Define our Spark session
+      val spark = SparkSession.builder
+        .appName("Github GraphFrame Builder")
+        .config("spark.sql.autoBroadcastJoinThreshold", 10485760*1000) // 10MB * 1000 = 10GB
+        .config("spark.sql.broadcastTimeout", -1) // Indefinite
+        .getOrCreate()
 
-    // Construct the graph
-    val graph = GraphFrame(v, e)
+      // Get the graph
+      val graph = GraphBuilder.constructGraph(batch, spark)
 
-    // Run label propagation algorithm
-    val iterations = if (args.length >= 2) args(1).toInt else 5
-    val result = graph.labelPropagation.maxIter(iterations).run().persist()
+      // Store the graph
+      GraphBuilder.storeGraph(outputBucketName + "/" + batch, graph)
 
-    v.unpersist()
-    e.unpersist()
+      // Run label propagation algorithm
+      val result = graph.labelPropagation.maxIter(5).run()
 
-    // Process output
-    result.printSchema()
-    val output = result.select("id", "label").persist()
+      // Process output
+      result.printSchema()
+      val output = result.select("id", "label")
 
-    output.show()
-    output.write.parquet("%s/%s_%s".format(args(0), java.time.LocalDateTime.now, iterations.toString))
+      output.show()
+      output.repartition(1).write.mode(SaveMode.Overwrite).csv("%s/%s/label_propagation/%s".format(outputBucketName, batch, 5.toString))
 
-    spark.stop()
+      spark.stop()
+    }}
   }
 }
