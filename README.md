@@ -1,5 +1,7 @@
 # ID2221 - Final Project
 
+Builds a directional graph from all public events (pushing public commits, creating repositories, ...). Each event is an edge which connects a user with a repository.
+
 ## Table of Contents
 + [About](#about)
 + [Getting Started](#getting_started)
